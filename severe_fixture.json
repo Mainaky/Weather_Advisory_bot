@@ -1,0 +1,18 @@
+{
+  "place": "Recorded fixture",
+  "date": "fixture-date",
+  "temperature_2m": 20,
+  "apparent_temperature": 20,
+  "wind_speed_10m": 30,
+  "wind_gusts_10m": 50,
+  "precipitation": 20,
+  "precipitation_probability": 90,
+  "precipitation_probability_max": 95,
+  "daily_precipitation_sum": 72,
+  "wind_gusts_10m_max": 65,
+  "uv_index": 1,
+  "uv_index_max": 3,
+  "weather_code": 65,
+  "pressure_msl": 985,
+  "relative_humidity_2m": 90
+}

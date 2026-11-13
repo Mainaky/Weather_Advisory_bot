@@ -1,0 +1,115 @@
+- id: SOP-001
+  title: Thunderstorm outdoors
+  category: general_outdoor
+  severity: 4
+  type: numeric
+  applies_to: [any]
+  condition: "weather_code >= 95 and weather_code <= 99"
+  advice: "Avoid outdoor activity during thunderstorms. The forecast weather code is {weather_code}."
+  rationale: Thunderstorms bring lightning and hazardous conditions.
+- id: SOP-002
+  title: Organised rain system proxy
+  category: general_outdoor
+  severity: 4
+  type: numeric
+  scope: global
+  overrides_category: true
+  applies_to: [any]
+  condition: "daily_precipitation_sum >= 64.5 or (precipitation_probability_max >= 80 and daily_precipitation_sum >= 35) or ((weather_code == 65 or weather_code == 82 or weather_code == 95 or weather_code == 96 or weather_code == 99) and pressure_msl < 1000)"
+  advice: "A heavy-rain-system proxy is active: forecast daily rainfall is {daily_precipitation_sum} mm and peak precipitation probability is {precipitation_probability_max}%. Treat outdoor plans as hazardous and postpone them."
+  rationale: Multiple heavy-rain indicators signal a potentially organised rain system.
+- id: SOP-003
+  title: Strong wind while cycling or riding
+  category: outdoor_exercise
+  severity: 3
+  type: numeric
+  applies_to: [cycling, two_wheeler]
+  condition: "wind_gusts_10m >= 40 and wind_speed_10m >= 25"
+  advice: "Avoid cycling or two-wheeler travel in these winds: gusts are {wind_gusts_10m} km/h and sustained wind is {wind_speed_10m} km/h."
+  rationale: Strong gusts can destabilise bicycles and two-wheelers.
+- id: SOP-004
+  title: Heavy rain while travelling
+  category: travel
+  severity: 3
+  type: numeric
+  applies_to: [travel]
+  condition: "daily_precipitation_sum >= 35 or precipitation_probability >= 80"
+  advice: "Consider postponing non-essential travel: forecast rainfall is {daily_precipitation_sum} mm and precipitation probability is {precipitation_probability}%."
+  rationale: Heavy rain can reduce visibility and make roads hazardous.
+- id: SOP-005
+  title: High UV during midday
+  category: general_outdoor
+  severity: 3
+  type: numeric
+  applies_to: [any]
+  condition: "uv_index >= 8"
+  time_window: [11, 16]
+  advice: "Limit outdoor exposure during peak UV; the UV index is {uv_index}."
+  rationale: Very high UV increases risk of sun exposure injury.
+- id: SOP-006
+  title: Heat stress for children and older adults
+  category: vulnerable_groups
+  severity: 4
+  type: numeric
+  applies_to: [child_outdoor, elderly_outdoor]
+  condition: "apparent_temperature >= 38"
+  advice: "Avoid strenuous outdoor activity for children and older adults in this heat; apparent temperature is {apparent_temperature} C."
+  rationale: Heat stress risk is higher for children and older adults.
+- id: SOP-007
+  title: Cold conditions for older adults
+  category: vulnerable_groups
+  severity: 3
+  type: numeric
+  applies_to: [elderly_outdoor]
+  condition: "apparent_temperature <= 5"
+  advice: "Keep the outdoor stroll brief or postpone it; apparent temperature is {apparent_temperature} C."
+  rationale: Cold conditions can be harder on older adults.
+- id: SOP-008
+  title: Extreme heat for pet walks
+  category: vulnerable_groups
+  severity: 3
+  type: numeric
+  applies_to: [pet_walk]
+  condition: "apparent_temperature >= 35"
+  advice: "Avoid a midday pet walk in this heat; apparent temperature is {apparent_temperature} C and pavement may be hot."
+  rationale: Hot pavement can injure pets' paws.
+- id: SOP-009
+  title: Fog and low visibility
+  category: travel
+  severity: 3
+  type: numeric
+  applies_to: [travel, cycling, two_wheeler]
+  condition: "weather_code == 45 or weather_code == 48"
+  advice: "Visibility may be reduced by fog (weather code {weather_code}); postpone travel if possible."
+  rationale: Fog can make travel unsafe by reducing visibility.
+- id: SOP-010
+  title: Wet conditions for outdoor exercise
+  category: outdoor_exercise
+  severity: 2
+  type: numeric
+  applies_to: [running, hiking, cycling]
+  condition: "precipitation_probability >= 60"
+  advice: "Rain is likely during your activity; precipitation probability is {precipitation_probability}%."
+  rationale: Wet ground can affect outdoor exercise.
+- id: SOP-011
+  title: Pleasant picnic conditions
+  category: general_outdoor
+  severity: 1
+  type: fuzzy
+  applies_to: [picnic]
+  fuzzy_description: "The user is planning a picnic or casual leisure outdoors."
+  soft_conditions:
+    - "precipitation_probability < 30"
+    - "temperature_2m >= 18 and temperature_2m <= 30"
+    - "wind_speed_10m < 25"
+  advice: "Conditions look suitable for a picnic: temperature is {temperature_2m} C, rain probability is {precipitation_probability}%, and wind is {wind_speed_10m} km/h."
+  rationale: Mild temperatures, low rain chance, and light wind support casual outdoor leisure.
+- id: SOP-012
+  title: Child outdoor activity in strong wind
+  category: vulnerable_groups
+  severity: 2
+  type: numeric
+  applies_to: [child_outdoor]
+  condition: "wind_gusts_10m >= 50"
+  advice: "Choose a sheltered activity for a child; wind gusts are {wind_gusts_10m} km/h."
+  rationale: Strong gusts can make exposed play areas uncomfortable or unsafe.
