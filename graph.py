@@ -197,7 +197,7 @@ def make_graph(model=None, sop_path: Path = ROOT / "sops.yaml", weather_module=w
         facts = state["weather_facts"]
         chosen_text = _filled(state["chosen_sop"], facts)
         other_text = [_filled(s, facts) for s in state.get("other_sops", [])]
-        prompt = "Rewrite only the approved advice in clear language. Do not add numbers, advice, or facts. Cite each supplied SOP ID. Advice: {advice}\nOther SOPs: {others}\nVerified facts: {facts}\nIDs: {ids}"
+        prompt = "Rewrite only the approved advice in clear language. Do not add numbers, advice, or facts. Keep every number from the approved advice in your answer. Cite each supplied SOP ID. Advice: {advice}\nOther SOPs: {others}\nVerified facts: {facts}\nIDs: {ids}"
         ids = [state["chosen_sop"]["id"]] + [s["id"] for s in state.get("other_sops", [])]
         reply = llm().invoke(prompt.format(advice=chosen_text, others=other_text, facts=facts, ids=ids)).content
         fallback = f"{chosen_text} [{state['chosen_sop']['id']}]"
@@ -212,10 +212,13 @@ def make_graph(model=None, sop_path: Path = ROOT / "sops.yaml", weather_module=w
         citations = re.findall(r"SOP-[A-Z0-9-]+", text)
         answer_without_ids = re.sub(r"SOP-[A-Z0-9-]+", "", text)
         number_strings = re.findall(r"(?<![A-Za-z])[-+]?\d+(?:\.\d+)?", answer_without_ids)
+        approved_without_ids = re.sub(r"SOP-[A-Z0-9-]+", "", state.get("approved_text", ""))
+        expected_numbers = [float(value) for value in re.findall(r"(?<![A-Za-z])[-+]?\d+(?:\.\d+)?", approved_without_ids)]
+        numbers_complete = all(any(abs(expected - float(actual)) <= 0.51 for actual in number_strings) for expected in expected_numbers)
         allowed_numbers = [float(v) for v in state.get("weather_facts", {}).values() if isinstance(v, (int, float))]
         allowed_numbers += [float(value) for value in re.findall(r"(?<![A-Za-z])[-+]?\d+(?:\.\d+)?", state.get("approved_text", ""))]
         expected_ids = {state["chosen_sop"]["id"]} | {s["id"] for s in state.get("other_sops", [])}
-        if not expected_ids.issubset(set(citations)) or any(value not in valid for value in citations) or any(not any(abs(float(value) - allowed) <= 0.51 for allowed in allowed_numbers) for value in number_strings):
+        if not numbers_complete or not expected_ids.issubset(set(citations)) or any(value not in valid for value in citations) or any(not any(abs(float(value) - allowed) <= 0.51 for allowed in allowed_numbers) for value in number_strings):
             text = state.get("approved_text", "")
         return {"reply": text, "session_context": {"last_location": state.get("location"), "last_activity": state.get("activity"), "last_sop_id": state["chosen_sop"]["id"]}}
 

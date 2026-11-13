@@ -104,6 +104,7 @@ Results from `python evals.py` on 2026-11-13:
 | Session memory | Evening follow-up | Reuse city and activity | PASS | Same graph thread |
 | Place clarification | City-only reply after a missing-place question | Keep the earlier activity and use the city | PASS | Deterministic clarification fallback |
 | Ordinary cycling | Calm cycling forecast | Show verified weather with a cautious note | PASS | SOP-013 covers clear conditions with no cycling warning threshold |
+| Reply number completeness | Model omits forecast numbers | Replace wording with the exact approved template | PASS | Deterministic check enforces every approved number |
 | Live policy edit | Append SOP-014 in temporary YAML | Match without control-flow edits | PASS | Temporary file is discarded afterward |
 
 Recorded severe conditions make the suite repeatable after a weather event moves on. For a stable production suite, keep versioned fixtures for all decision boundaries and run a scheduled live smoke test separately. Live forecast data changes and provider availability is outside this program's control.

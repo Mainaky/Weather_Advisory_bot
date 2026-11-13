@@ -13,6 +13,8 @@ import weather
 
 class FakeModel:
     """Predictable structured answers; keeps the evaluation independent of API keys."""
+    def __init__(self, omit_numbers=False): self.omit_numbers = omit_numbers
+
     def with_structured_output(self, schema):
         def answer(value):
             text = str(value)
@@ -43,6 +45,8 @@ class FakeModel:
 
     def invoke(self, value):
         prompt = str(value)
+        if self.omit_numbers:
+            return SimpleNamespace(content="Check local alerts and road conditions. [SOP-013]")
         advice = re.search(r"Advice: (.*?)\nOther SOPs:", prompt, re.S)
         ids = re.search(r"IDs: (\[.*\])", prompt, re.S)
         return SimpleNamespace(content=(advice.group(1) if advice else "") + " [" + ", ".join(re.findall(r"SOP-[A-Z0-9-]+", ids.group(1) if ids else "")) + "]")
@@ -131,6 +135,10 @@ if __name__ == '__main__':
     
     r = run("Is it safe to cycle in Bhopal today?", good_weather())
     record("Ordinary cycling", "Show verified conditions when no warning applies", r.get("chosen_sop", {}).get("id") == "SOP-013" and "None of the cycling warning thresholds" in r.get("reply", ""))
+
+    short_graph = make_graph(FakeModel(omit_numbers=True), ROOT / "sops.yaml", FakeWeather(good_weather()))
+    short = short_graph.invoke({"user_text": "Is it safe to cycle in Bhopal today?", "messages": [], "session_context": {}}, {"configurable": {"thread_id": "number-completeness"}})
+    record("Reply number completeness", "Fallback when model omits forecast values", "24 C" in short["reply"] and "15 km/h" in short["reply"])
 
     r = run("Is it safe to go scuba diving in Andamans?", good_weather())
     record("No SOP", "No guidance without invented advice", "I don't have guidance for that" in r["reply"] and not r.get("chosen_sop"))
