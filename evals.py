@@ -108,7 +108,7 @@ if __name__ == '__main__':
             loc = weather.geocode("Bhopal")
             facts = weather.fetch_forecast(loc, "today")
             result = run("Is it safe to cycle in Bhopal today?", facts)
-            severe = result.get("candidate_sops", [])
+            severe = [s for s in result.get("candidate_sops", []) if int(s.get("severity", 0)) >= 3 or s.get("scope") == "global"]
             if not severe:
                 return "NOT EXERCISED (live conditions calm)", "No SOP threshold matched the live forecast"
             cited = [s for s in severe if s["id"] in result["reply"]]
@@ -129,6 +129,9 @@ if __name__ == '__main__':
         record("Severe fixture", "Recorded heavy-rain fixture triggers system SOP", fixture_ok)
     record("Live severe weather", "Live numbers and citation match live SOP", live_status if live_status.startswith("NOT EXERCISED") else live_status == "PASS", live_status + "; " + live_note)
     
+    r = run("Is it safe to cycle in Bhopal today?", good_weather())
+    record("Ordinary cycling", "Show verified conditions when no warning applies", r.get("chosen_sop", {}).get("id") == "SOP-013" and "None of the cycling warning thresholds" in r.get("reply", ""))
+
     r = run("Is it safe to go scuba diving in Andamans?", good_weather())
     record("No SOP", "No guidance without invented advice", "I don't have guidance for that" in r["reply"] and not r.get("chosen_sop"))
     
@@ -159,9 +162,9 @@ if __name__ == '__main__':
         temp_sops = Path(folder) / "sops.yaml"
         shutil.copy(ROOT / "sops.yaml", temp_sops)
         with temp_sops.open("a", encoding="utf-8") as stream:
-            stream.write("\n- id: SOP-013\n  title: New test rule\n  category: general_outdoor\n  severity: 2\n  type: numeric\n  applies_to: [cycling]\n  condition: \"relative_humidity_2m >= 40\"\n  advice: \"Humidity is {relative_humidity_2m}%.\"\n  rationale: Demonstrates an editable policy.\n")
+            stream.write("\n- id: SOP-014\n  title: New test rule\n  category: general_outdoor\n  severity: 2\n  type: numeric\n  applies_to: [cycling]\n  condition: \"relative_humidity_2m >= 40\"\n  advice: \"Humidity is {relative_humidity_2m}%.\"\n  rationale: Demonstrates an editable policy.\n")
         result = run("Is cycling safe in Bhopal?", good_weather(), sop_path=temp_sops)
-    record("Live policy edit", "New YAML rule matches without code change", any(s["id"] == "SOP-013" for s in result.get("candidate_sops", [])))
+    record("Live policy edit", "New YAML rule matches without code change", any(s["id"] == "SOP-014" for s in result.get("candidate_sops", [])))
     
     print(f"{'CASE':<24} | {'WHAT IT CHECKS':<48} | {'PASS CRITERIA':<12} | {'RESULT':<33} | NOTES")
     print("-" * 145)

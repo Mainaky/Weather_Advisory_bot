@@ -70,7 +70,7 @@ flowchart TD
 - **Add an SOP:** append another mapping to the YAML list. For example:
 
   ```yaml
-  - id: SOP-013
+  - id: SOP-014
     title: High humidity while running
     category: outdoor_exercise
     severity: 2
@@ -103,7 +103,8 @@ Results from `python evals.py` on 2026-11-13:
 | Number tampering | User claims wind is 5 km/h | Use mocked API values | PASS | Mocked wind is 28 km/h |
 | Session memory | Evening follow-up | Reuse city and activity | PASS | Same graph thread |
 | Place clarification | City-only reply after a missing-place question | Keep the earlier activity and use the city | PASS | Deterministic clarification fallback |
-| Live policy edit | Append SOP-013 in temporary YAML | Match without control-flow edits | PASS | Temporary file is discarded afterward |
+| Ordinary cycling | Calm cycling forecast | Show verified weather with a cautious note | PASS | SOP-013 covers clear conditions with no cycling warning threshold |
+| Live policy edit | Append SOP-014 in temporary YAML | Match without control-flow edits | PASS | Temporary file is discarded afterward |
 
 Recorded severe conditions make the suite repeatable after a weather event moves on. For a stable production suite, keep versioned fixtures for all decision boundaries and run a scheduled live smoke test separately. Live forecast data changes and provider availability is outside this program's control.
 

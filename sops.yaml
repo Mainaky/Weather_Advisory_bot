@@ -113,3 +113,12 @@
   condition: "wind_gusts_10m >= 50"
   advice: "Choose a sheltered activity for a child; wind gusts are {wind_gusts_10m} km/h."
   rationale: Strong gusts can make exposed play areas uncomfortable or unsafe.
+- id: SOP-013
+  title: Ordinary cycling forecast summary
+  category: outdoor_exercise
+  severity: 1
+  type: numeric
+  applies_to: [cycling]
+  condition: "weather_code <= 3 and wind_gusts_10m < 40 and wind_speed_10m < 25 and daily_precipitation_sum < 35 and precipitation_probability < 60 and uv_index < 8 and apparent_temperature > 5 and apparent_temperature < 38"
+  advice: "For {place}, the forecast shows {temperature_2m} C, wind at {wind_speed_10m} km/h, gusts at {wind_gusts_10m} km/h, and a {precipitation_probability}% precipitation chance. None of the cycling warning thresholds in this policy were triggered. This is not a guarantee of safety; check local alerts and road conditions."
+  rationale: Give a grounded, cautious summary for clear conditions when no cycling warning rule applies.
