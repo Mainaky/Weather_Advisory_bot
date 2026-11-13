@@ -149,6 +149,11 @@ if __name__ == '__main__':
     first = graph.invoke({"user_text": "Cycling in Bhopal today?", "messages": [], "session_context": {}}, cfg)
     second = graph.invoke({"user_text": "What about this evening instead?", "messages": [], "session_context": first.get("session_context", {})}, cfg)
     record("Session memory", "Follow-up reuses location and activity", second.get("activity") == "cycling" and second.get("location") == "Bhopal")
+
+    graph = make_graph(FakeModel(), ROOT / "sops.yaml", FakeWeather(wind))
+    first = graph.invoke({"user_text": "Is it safe to cycle today?", "messages": [], "session_context": {}}, {"configurable": {"thread_id": "place-clarification"}})
+    second = graph.invoke({"user_text": "Bhopal", "messages": [], "session_context": first.get("session_context", {})}, {"configurable": {"thread_id": "place-clarification"}})
+    record("Place clarification", "One-word city answer keeps prior activity", second.get("activity") == "cycling" and second.get("location") == "Bhopal")
     
     with tempfile.TemporaryDirectory() as folder:
         temp_sops = Path(folder) / "sops.yaml"
