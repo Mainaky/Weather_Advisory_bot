@@ -47,15 +47,15 @@ class State(TypedDict, total=False):
 
 def get_model():
     load_dotenv(ROOT / ".env")
-    provider = os.getenv("PROVIDER")
-    model = os.getenv("MODEL")
+    provider = os.getenv("PROVIDER", "ollama")
+    model = os.getenv("MODEL", "llama3.2:3b")
     if not model:
         if os.getenv("ANTHROPIC_API_KEY"):
-            provider, model = "anthropic", "claude-3-5-haiku-latest"
+            provider, model = "anthropic", "claude-haiku-4-5-20251001"
         elif os.getenv("OPENAI_API_KEY"):
             provider, model = "openai", "gpt-4o-mini"
         else:
-            raise RuntimeError("Set MODEL and its provider API key in .env (see .env.example).")
+            provider, model = "ollama", "llama3.2:3b"
     return init_chat_model(model, model_provider=provider) if provider else init_chat_model(model)
 
 

@@ -4,7 +4,15 @@ A small Streamlit chat app backed by a branching LangGraph. It answers outdoor s
 
 ## Setup and run
 
-Use Python 3.11 or newer. From this folder:
+Use Python 3.11 or newer. The default setup runs a local model with Ollama, so it does not require a paid LLM API key. Install Ollama for Windows from [ollama.com/download/windows](https://ollama.com/download/windows), then open PowerShell and download the small model:
+
+```powershell
+ollama pull llama3.2:3b
+```
+
+The model download is about 2 GB. Ollama runs the model on your computer; response speed depends on your hardware. Open-Meteo weather requests still need an internet connection.
+
+From this project folder, create the Python environment:
 
 ```powershell
 python -m venv .venv
@@ -13,7 +21,7 @@ python -m pip install -r requirements.txt
 Copy-Item .env.example .env
 ```
 
-Edit `.env` and set a provider, model, and its API key. For OpenAI, use `PROVIDER=openai`, `MODEL=gpt-4o-mini`, and `OPENAI_API_KEY=...`. For Anthropic, use `PROVIDER=anthropic`, `MODEL=claude-3-5-haiku-latest`, and `ANTHROPIC_API_KEY=...`. If `MODEL` is blank, `graph.py` selects Anthropic when its key exists, then OpenAI when its key exists.
+The copied `.env.example` already selects Ollama with `llama3.2:3b`; no API key or billing setup is needed. Optional paid alternatives are OpenAI (`PROVIDER=openai`, `MODEL=gpt-4o-mini`, `OPENAI_API_KEY=...`) or Anthropic (`PROVIDER=anthropic`, `MODEL=claude-haiku-4-5-20251001`, `ANTHROPIC_API_KEY=...`).
 
 Run the chat frontend:
 
@@ -29,7 +37,7 @@ Run the evaluation suite:
 python evals.py
 ```
 
-The deterministic cases use a fixed fake model and mocked weather so they do not need an API key. The live smoke case calls Open-Meteo and reports `NOT EXERCISED` if live conditions are calm or the service cannot be reached. Its recorded heavy-rain fixture remains deterministic.
+The deterministic cases use a fixed fake model and mocked weather so they do not need Ollama or an API key. The live smoke case calls Open-Meteo and reports `NOT EXERCISED` if live conditions are calm or the service cannot be reached. Its recorded heavy-rain fixture remains deterministic.
 
 ## Why YAML?
 
